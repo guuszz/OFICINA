@@ -157,7 +157,7 @@ Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalh
 
 ## 👨‍💻 Autor
 
-**Seu Nome** - [seu-email@exemplo.com]
+Gustavo Avelino Saraiva Oliveira- gustavosaraiva2504@gmail.com
 
 ---
 
