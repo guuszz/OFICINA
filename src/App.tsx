@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Wrench, Users, Car, ClipboardList, Activity, RefreshCw } from 'lucide-react';
-import ClienteForm from './components/ClienteForm';
 import VeiculoForm from './components/VeiculoForm';
 import OrdemForm from './components/OrdemForm';
 import ClientesList from './components/ClientesList';
@@ -81,12 +80,7 @@ function App() {
       <main className="max-w-7xl mx-auto px-4 py-8">
         <div key={refreshKey}>
           {activeTab === 'dashboard' && <Stats />}
-          {activeTab === 'clientes' && (
-            <div className="space-y-8">
-              <ClienteForm onSuccess={handleRefresh} />
-              <ClientesList />
-            </div>
-          )}
+          {activeTab === 'clientes' && <ClientesList />}
           {activeTab === 'veiculos' && (
             <div className="space-y-8">
               <VeiculoForm onSuccess={handleRefresh} />
