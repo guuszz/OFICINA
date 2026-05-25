@@ -15,6 +15,11 @@
   <a href="https://github.com/guuszz/OFICINA/actions/workflows/ci.yml"><img src="https://github.com/guuszz/OFICINA/actions/workflows/ci.yml/badge.svg" alt="CI"/></a>
 </p>
 
+<p align="center">
+  <img src="docs/screenshots/dashboard.png" alt="Dashboard com clientes, veiculos e ordens" width="800"/>
+</p>
+
+
 ---
 
 ## 💡 Sobre · About
