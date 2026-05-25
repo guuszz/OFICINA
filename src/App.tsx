@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Wrench, Users, Car, ClipboardList, Activity, Plus, RefreshCw } from 'lucide-react';
+import React, { useState } from 'react';
+import { Wrench, Users, Car, ClipboardList, Activity, RefreshCw } from 'lucide-react';
 import ClienteForm from './components/ClienteForm';
 import VeiculoForm from './components/VeiculoForm';
 import OrdemForm from './components/OrdemForm';

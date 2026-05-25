@@ -34,7 +34,7 @@ const VeiculoForm: React.FC<VeiculoFormProps> = ({ onSuccess }) => {
         const data = await response.json();
         setClientes(data);
       }
-    } catch (error) {
+    } catch {
       console.error('Erro ao buscar clientes:', error);
     } finally {
       setLoadingClientes(false);
@@ -64,7 +64,7 @@ const VeiculoForm: React.FC<VeiculoFormProps> = ({ onSuccess }) => {
       } else {
         setMessage({ type: 'error', text: data.message || 'Erro ao cadastrar veículo' });
       }
-    } catch (error) {
+    } catch {
       setMessage({ type: 'error', text: 'Erro de conexão com o servidor' });
     } finally {
       setLoading(false);

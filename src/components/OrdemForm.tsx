@@ -45,7 +45,7 @@ const OrdemForm: React.FC<OrdemFormProps> = ({ onSuccess }) => {
         const data = await response.json();
         setVeiculos(data);
       }
-    } catch (error) {
+    } catch {
       console.error('Erro ao buscar veículos:', error);
     } finally {
       setLoadingVeiculos(false);
@@ -78,7 +78,7 @@ const OrdemForm: React.FC<OrdemFormProps> = ({ onSuccess }) => {
       } else {
         setMessage({ type: 'error', text: data.message || 'Erro ao criar ordem de serviço' });
       }
-    } catch (error) {
+    } catch {
       setMessage({ type: 'error', text: 'Erro de conexão com o servidor' });
     } finally {
       setLoading(false);

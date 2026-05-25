@@ -10,6 +10,10 @@ interface StatsData {
   ordensConcluidas: number;
 }
 
+interface Ordem {
+  status: string;
+}
+
 const Stats: React.FC = () => {
   const [stats, setStats] = useState<StatsData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -38,9 +42,9 @@ const Stats: React.FC = () => {
         totalClientes: clientes.length,
         totalVeiculos: veiculos.length,
         totalOrdens: ordens.length,
-        ordensAbertas: ordens.filter((o: any) => o.status === 'Aberta').length,
-        ordensAndamento: ordens.filter((o: any) => o.status === 'Em Andamento').length,
-        ordensConcluidas: ordens.filter((o: any) => o.status === 'Concluída').length,
+        ordensAbertas: ordens.filter((o: Ordem) => o.status === 'Aberta').length,
+        ordensAndamento: ordens.filter((o: Ordem) => o.status === 'Em Andamento').length,
+        ordensConcluidas: ordens.filter((o: Ordem) => o.status === 'Concluída').length,
       };
 
       setStats(statsData);

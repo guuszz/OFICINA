@@ -37,7 +37,7 @@ const ClienteForm: React.FC<ClienteFormProps> = ({ onSuccess }) => {
       } else {
         setMessage({ type: 'error', text: data.message || 'Erro ao cadastrar cliente' });
       }
-    } catch (error) {
+    } catch {
       setMessage({ type: 'error', text: 'Erro de conexão com o servidor' });
     } finally {
       setLoading(false);
