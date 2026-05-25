@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Wrench, Users, Car, ClipboardList, Activity, RefreshCw } from 'lucide-react';
+import { Toaster } from 'sonner';
 import VeiculoForm from './components/VeiculoForm';
 import OrdemForm from './components/OrdemForm';
 import ClientesList from './components/ClientesList';
@@ -26,6 +27,14 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
+      <Toaster
+        position="top-right"
+        richColors
+        closeButton
+        toastOptions={{
+          style: { fontFamily: 'system-ui, -apple-system, sans-serif' },
+        }}
+      />
       {/* Header */}
       <header className="bg-white/80 backdrop-blur-lg border-b border-white/20 shadow-lg">
         <div className="max-w-7xl mx-auto px-4 py-6">

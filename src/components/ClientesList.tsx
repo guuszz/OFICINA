@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Users, Phone, Mail, Calendar, Search, Loader2, Plus, User } from 'lucide-react';
+import { toast } from 'sonner';
 import {
   Dialog,
   DialogContent,
@@ -28,7 +29,6 @@ const ClientesList: React.FC = () => {
 
   const [formData, setFormData] = useState({ nome: '', telefone: '', email: '' });
   const [submitting, setSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchClientes();
@@ -40,9 +40,12 @@ const ClientesList: React.FC = () => {
       if (response.ok) {
         const data = await response.json();
         setClientes(data);
+      } else {
+        toast.error('Não foi possível carregar a lista de clientes');
       }
     } catch (error) {
       console.error('Erro ao buscar clientes:', error);
+      toast.error('Erro de conexão ao buscar clientes');
     } finally {
       setLoading(false);
     }
@@ -51,7 +54,6 @@ const ClientesList: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
-    setSubmitError(null);
     try {
       const response = await fetch('http://localhost:3001/clientes', {
         method: 'POST',
@@ -60,14 +62,20 @@ const ClientesList: React.FC = () => {
       });
       const data = await response.json();
       if (response.ok) {
+        const nome = formData.nome;
         setFormData({ nome: '', telefone: '', email: '' });
         setDialogOpen(false);
         await fetchClientes();
+        toast.success(`Cliente ${nome} cadastrado!`, {
+          description: 'Você já pode adicionar veículos pra este cliente.',
+        });
       } else {
-        setSubmitError(data.message || 'Erro ao cadastrar cliente');
+        toast.error(data.message || 'Erro ao cadastrar cliente');
       }
     } catch {
-      setSubmitError('Erro de conexão com o servidor');
+      toast.error('Erro de conexão com o servidor', {
+        description: 'Verifique se o backend está rodando.',
+      });
     } finally {
       setSubmitting(false);
     }
@@ -181,12 +189,6 @@ const ClientesList: React.FC = () => {
                     />
                   </div>
                 </div>
-
-                {submitError && (
-                  <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-800">
-                    {submitError}
-                  </div>
-                )}
 
                 <div className="flex justify-end gap-2 pt-2">
                   <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
