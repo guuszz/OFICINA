@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import { Wrench, Users, Car, ClipboardList, Activity, RefreshCw } from 'lucide-react';
 import { Toaster } from 'sonner';
-import VeiculoForm from './components/VeiculoForm';
-import OrdemForm from './components/OrdemForm';
 import ClientesList from './components/ClientesList';
 import VeiculosList from './components/VeiculosList';
 import OrdensList from './components/OrdensList';
@@ -90,18 +88,8 @@ function App() {
         <div key={refreshKey}>
           {activeTab === 'dashboard' && <Stats />}
           {activeTab === 'clientes' && <ClientesList />}
-          {activeTab === 'veiculos' && (
-            <div className="space-y-8">
-              <VeiculoForm onSuccess={handleRefresh} />
-              <VeiculosList />
-            </div>
-          )}
-          {activeTab === 'ordens' && (
-            <div className="space-y-8">
-              <OrdemForm onSuccess={handleRefresh} />
-              <OrdensList />
-            </div>
-          )}
+          {activeTab === 'veiculos' && <VeiculosList />}
+          {activeTab === 'ordens' && <OrdensList />}
         </div>
       </main>
     </div>
