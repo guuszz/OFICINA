@@ -1,164 +1,106 @@
-# 🔧 API Oficina Mecânica
+<h1 align="center">🔧 Oficina Mecânica</h1>
 
-Uma API RESTful completa para gestão de oficina mecânica, desenvolvida com Node.js, Express e React.
+<p align="center">
+  <b>Sistema full-stack para gestão de oficina — API REST + interface web.</b><br/>
+  <sub>Full-stack mechanic-shop management system — REST API + web UI.</sub>
+</p>
 
-## 🚀 Funcionalidades
-
-- **Gestão de Clientes**: Cadastro, listagem e busca de clientes
-- **Gestão de Veículos**: Controle de veículos por cliente
-- **Ordens de Serviço**: Criação e acompanhamento de ordens de serviço
-- **Dashboard**: Estatísticas em tempo real
-- **Interface Web**: Frontend React com Tailwind CSS
-
-## 🛠️ Tecnologias Utilizadas
-
-### Backend
-- **Node.js** - Runtime JavaScript
-- **Express.js** - Framework web
-- **CORS** - Middleware para requisições cross-origin
-
-### Frontend
-- **React 18** - Biblioteca JavaScript para interfaces
-- **TypeScript** - Superset JavaScript com tipagem
-- **Vite** - Build tool e dev server
-- **Tailwind CSS** - Framework CSS utilitário
-- **Lucide React** - Ícones
-
-## 📋 Pré-requisitos
-
-- Node.js (versão 16 ou superior)
-- npm ou yarn
-
-## 🚀 Como Executar
-
-### 1. Clone o repositório
-```bash
-git clone <URL_DO_SEU_REPOSITORIO>
-cd project-bolt-sb1-wbkoyab5Oficina/project
-```
-
-### 2. Instale as dependências
-```bash
-npm install
-```
-
-### 3. Execute o projeto
-```bash
-# Para desenvolvimento (servidor + frontend)
-npm run dev
-
-# Apenas o servidor
-npm run server
-
-# Apenas o frontend
-npm run client
-```
-
-### 4. Acesse a aplicação
-- **Frontend**: http://localhost:5173
-- **API**: http://localhost:3001
-- **Health Check**: http://localhost:3001/health
-
-## 📚 Endpoints da API
-
-### Clientes
-- `GET /clientes` - Listar todos os clientes
-- `POST /clientes` - Criar novo cliente
-- `GET /clientes/:id` - Buscar cliente por ID
-
-### Veículos
-- `GET /veiculos` - Listar todos os veículos
-- `POST /veiculos` - Criar novo veículo
-- `GET /veiculos/:id` - Buscar veículo por ID
-
-### Ordens de Serviço
-- `GET /ordens` - Listar todas as ordens
-- `POST /ordens` - Criar nova ordem
-- `PUT /ordens/:id/status` - Atualizar status da ordem
-
-### Health Check
-- `GET /health` - Status da API
-
-## 📊 Estrutura do Projeto
-
-```
-project/
-├── server/                 # Backend
-│   ├── index.js           # Servidor principal
-│   ├── routes/            # Rotas da API
-│   │   ├── clientes.js
-│   │   ├── veiculos.js
-│   │   └── ordens.js
-│   └── storage/           # Simulação de banco de dados
-│       └── database.js
-├── src/                   # Frontend React
-│   ├── components/        # Componentes React
-│   ├── App.tsx           # Componente principal
-│   └── main.tsx          # Ponto de entrada
-├── package.json
-└── README.md
-```
-
-## 🔧 Scripts Disponíveis
-
-- `npm run dev` - Executa servidor e frontend simultaneamente
-- `npm run server` - Executa apenas o servidor
-- `npm run client` - Executa apenas o frontend
-- `npm run build` - Build de produção
-- `npm run preview` - Preview do build
-
-## 📝 Exemplo de Uso
-
-### Criar um Cliente
-```bash
-curl -X POST http://localhost:3001/clientes \
-  -H "Content-Type: application/json" \
-  -d '{
-    "nome": "João Silva",
-    "telefone": "11987654321",
-    "email": "joao@email.com"
-  }'
-```
-
-### Criar um Veículo
-```bash
-curl -X POST http://localhost:3001/veiculos \
-  -H "Content-Type: application/json" \
-  -d '{
-    "clienteId": "1",
-    "placa": "XYZ1234",
-    "marca": "Honda",
-    "modelo": "Civic"
-  }'
-```
-
-### Criar uma Ordem de Serviço
-```bash
-curl -X POST http://localhost:3001/ordens \
-  -H "Content-Type: application/json" \
-  -d '{
-    "veiculoId": "1",
-    "descricao": "Troca de óleo e filtros",
-    "valor": 150.00
-  }'
-```
-
-## 🤝 Contribuição
-
-1. Faça um fork do projeto
-2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
-3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
-4. Push para a branch (`git push origin feature/AmazingFeature`)
-5. Abra um Pull Request
-
-## 📄 Licença
-
-Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalhes.
-
-## 👨‍💻 Autor
-
-Gustavo Avelino Saraiva Oliveira- gustavosaraiva2504@gmail.com
+<p align="center">
+  <img src="https://img.shields.io/badge/Node.js-339933?style=flat-square&logo=node.js&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Express-4-000000?style=flat-square&logo=express&logoColor=white"/>
+  <img src="https://img.shields.io/badge/React-18-61DAFB?style=flat-square&logo=react&logoColor=white"/>
+  <img src="https://img.shields.io/badge/TypeScript-5.5-3178C6?style=flat-square&logo=typescript&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Vite-5-646CFF?style=flat-square&logo=vite&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Tailwind-3-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white"/>
+</p>
 
 ---
 
-⭐ Se este projeto te ajudou, considere dar uma estrela! 
+## 💡 Sobre · About
+
+Sistema completo para gestão de oficina mecânica: cadastro de clientes, controle de veículos, abertura e acompanhamento de ordens de serviço, com dashboard de estatísticas em tempo real.
+
+> _Complete mechanic-shop management system: customer registration, vehicle tracking, work-order lifecycle, and a live stats dashboard._
+
+## ✨ Funcionalidades · Features
+
+- 👤 **Clientes** — cadastro, listagem e busca
+- 🚗 **Veículos** — vinculados ao cliente
+- 📋 **Ordens de serviço** — abertura, atualização de status, histórico
+- 📊 **Dashboard** — métricas em tempo real
+- 🌐 **Frontend integrado** — interface React com Tailwind
+
+## 🛠️ Stack
+
+**Backend**
+- Node.js + Express 4
+- CORS, ES modules
+- Storage em memória (fácil migrar para banco real)
+
+**Frontend**
+- React 18 + TypeScript 5.5
+- Vite 5 + Tailwind 3
+- Lucide React (ícones)
+
+## 🚀 Como rodar
+
+```bash
+git clone https://github.com/guuszz/OFICINA.git
+cd OFICINA
+npm install
+
+# sobe API (3001) + front (5173) ao mesmo tempo
+npm run dev
+```
+
+- Frontend: <http://localhost:5173>
+- API: <http://localhost:3001>
+- Health: <http://localhost:3001/health>
+
+## 📚 Endpoints
+
+| Método | Rota               | Descrição                         |
+|--------|--------------------|-----------------------------------|
+| GET    | `/clientes`        | Lista clientes                    |
+| POST   | `/clientes`        | Cadastra cliente                  |
+| GET    | `/clientes/:id`    | Busca cliente por ID              |
+| GET    | `/veiculos`        | Lista veículos                    |
+| POST   | `/veiculos`        | Cadastra veículo                  |
+| GET    | `/veiculos/:id`    | Busca veículo por ID              |
+| GET    | `/ordens`          | Lista ordens de serviço           |
+| POST   | `/ordens`          | Cria nova ordem                   |
+| PUT    | `/ordens/:id/status` | Atualiza status da ordem        |
+| GET    | `/health`          | Status da API                     |
+
+### Exemplo · Example
+
+```bash
+curl -X POST http://localhost:3001/clientes \
+  -H "Content-Type: application/json" \
+  -d '{"nome":"João Silva","telefone":"11987654321","email":"joao@email.com"}'
+```
+
+## 📂 Estrutura
+
+```
+server/                 # Backend
+├── index.js            # Entrypoint
+├── routes/             # clientes, veiculos, ordens
+└── storage/            # camada de dados
+src/                    # Frontend React
+├── components/
+├── App.tsx
+└── main.tsx
+```
+
+## 🗺️ Roadmap
+
+- [ ] Persistência real (PostgreSQL ou SQLite)
+- [ ] Autenticação JWT
+- [ ] Geração de PDF da OS
+- [ ] Documentação OpenAPI/Swagger
+- [ ] Testes automatizados
+
+## 📝 Licença
+
+MIT © [Gustavo Avelino Saraiva Oliveira](https://github.com/guuszz)
