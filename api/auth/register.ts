@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { z } from 'zod';
-import { prisma } from '../_lib/prisma';
-import { hashPassword, signToken, setCors } from '../_lib/auth';
+import { prisma } from '../_lib/prisma.js';
+import { hashPassword, signToken, setCors } from '../_lib/auth.js';
 
 const schema = z.object({
   email: z.string().email('Email inválido'),
