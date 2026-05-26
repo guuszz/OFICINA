@@ -26,9 +26,9 @@ const Stats: React.FC = () => {
     try {
       // Buscar dados de múltiplos endpoints
       const [clientesRes, veiculosRes, ordensRes] = await Promise.all([
-        fetch('http://localhost:3001/clientes'),
-        fetch('http://localhost:3001/veiculos'),
-        fetch('http://localhost:3001/ordens')
+        fetch('/api/clientes'),
+        fetch('/api/veiculos'),
+        fetch('/api/ordens')
       ]);
 
       const [clientes, veiculos, ordens] = await Promise.all([

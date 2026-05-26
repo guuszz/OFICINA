@@ -49,7 +49,7 @@ const VeiculosList: React.FC = () => {
 
   const fetchVeiculos = async () => {
     try {
-      const response = await fetch('http://localhost:3001/veiculos');
+      const response = await fetch('/api/veiculos');
       if (response.ok) setVeiculos(await response.json());
       else toast.error('Não foi possível carregar a lista de veículos');
     } catch {
@@ -61,7 +61,7 @@ const VeiculosList: React.FC = () => {
 
   const fetchClientes = async () => {
     try {
-      const response = await fetch('http://localhost:3001/clientes');
+      const response = await fetch('/api/clientes');
       if (response.ok) setClientes(await response.json());
     } catch {
       // já mostrado em fetchVeiculos
@@ -72,7 +72,7 @@ const VeiculosList: React.FC = () => {
     e.preventDefault();
     setSubmitting(true);
     try {
-      const response = await fetch('http://localhost:3001/veiculos', {
+      const response = await fetch('/api/veiculos', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),

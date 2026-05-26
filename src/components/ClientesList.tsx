@@ -36,7 +36,7 @@ const ClientesList: React.FC = () => {
 
   const fetchClientes = async () => {
     try {
-      const response = await fetch('http://localhost:3001/clientes');
+      const response = await fetch('/api/clientes');
       if (response.ok) {
         const data = await response.json();
         setClientes(data);
@@ -55,7 +55,7 @@ const ClientesList: React.FC = () => {
     e.preventDefault();
     setSubmitting(true);
     try {
-      const response = await fetch('http://localhost:3001/clientes', {
+      const response = await fetch('/api/clientes', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),

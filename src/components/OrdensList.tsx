@@ -59,7 +59,7 @@ const OrdensList: React.FC = () => {
 
   const fetchOrdens = async () => {
     try {
-      const response = await fetch('http://localhost:3001/ordens');
+      const response = await fetch('/api/ordens');
       if (response.ok) setOrdens(await response.json());
       else toast.error('Não foi possível carregar as ordens');
     } catch {
@@ -71,7 +71,7 @@ const OrdensList: React.FC = () => {
 
   const fetchVeiculos = async () => {
     try {
-      const response = await fetch('http://localhost:3001/veiculos');
+      const response = await fetch('/api/veiculos');
       if (response.ok) setVeiculos(await response.json());
     } catch {
       // já reportado
@@ -82,7 +82,7 @@ const OrdensList: React.FC = () => {
     e.preventDefault();
     setSubmitting(true);
     try {
-      const response = await fetch('http://localhost:3001/ordens', {
+      const response = await fetch('/api/ordens', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...formData, valor: parseFloat(formData.valor) }),
@@ -106,7 +106,7 @@ const OrdensList: React.FC = () => {
   const updateStatus = async (ordemId: string, novoStatus: string) => {
     setUpdatingStatus(ordemId);
     try {
-      const response = await fetch(`http://localhost:3001/ordens/${ordemId}/status`, {
+      const response = await fetch(`/api/ordens/${ordemId}/status`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: novoStatus }),
