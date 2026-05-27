@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, Suspense, lazy } from 'react';
 import { ClipboardList, Loader2, Plus, Car, User, Calendar, FileDown } from 'lucide-react';
 import { toast } from 'sonner';
 import {
@@ -14,9 +14,14 @@ import { Input } from './ui/input';
 import { Label } from './ui/label';
 import PageHeader from './PageHeader';
 import StatusBadge, { type OrdemStatus } from './StatusBadge';
-import { OrdemPdfDownload } from './OrdemPdf';
 import { useAuth } from '../contexts/AuthContext';
 import { cn } from '../lib/utils';
+
+// Lazy: @react-pdf/renderer pesa ~1.4MB minificado. Só carrega quando o
+// usuário realmente abre a aba Ordens (e mesmo assim, sob demanda do chunk).
+const OrdemPdfDownload = lazy(() =>
+  import('./OrdemPdf').then((mod) => ({ default: mod.OrdemPdfDownload })),
+);
 
 interface Veiculo {
   id: string;
@@ -277,49 +282,62 @@ const OrdensList: React.FC = () => {
                   )}
                 </div>
 
-                <OrdemPdfDownload
-                  ordem={{
-                    id: o.id,
-                    descricao: o.descricao,
-                    valor: o.valor,
-                    status: o.status,
-                    createdAt: o.createdAt,
-                    veiculo: {
-                      placa: o.veiculo.placa,
-                      marca: o.veiculo.marca,
-                      modelo: o.veiculo.modelo,
-                    },
-                    cliente: {
-                      nome: o.cliente.nome,
-                    },
-                  }}
-                  oficina={{
-                    nome: user?.name || 'OFICINA',
-                    email: user?.email,
-                  }}
-                >
-                  {({ loading, error }) => (
+                <Suspense
+                  fallback={
                     <button
                       type="button"
-                      disabled={loading || !!error}
-                      className={cn(
-                        'inline-flex h-8 items-center gap-1.5 rounded-md border border-border bg-card px-2.5 text-xs font-medium text-fg',
-                        'transition-all duration-150',
-                        'hover:border-accent/50 hover:bg-accent/5 hover:text-accent',
-                        'disabled:cursor-not-allowed disabled:opacity-50',
-                        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-bg'
-                      )}
-                      aria-label="Baixar PDF da ordem de serviço"
+                      disabled
+                      className="inline-flex h-8 items-center gap-1.5 rounded-md border border-border bg-card px-2.5 text-xs font-medium text-muted-foreground opacity-50"
                     >
-                      {loading ? (
-                        <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />
-                      ) : (
-                        <FileDown className="h-3.5 w-3.5" aria-hidden="true" />
-                      )}
-                      <span>{loading ? 'Gerando...' : error ? 'Erro' : 'Baixar PDF'}</span>
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />
+                      <span>Carregando PDF...</span>
                     </button>
-                  )}
-                </OrdemPdfDownload>
+                  }
+                >
+                  <OrdemPdfDownload
+                    ordem={{
+                      id: o.id,
+                      descricao: o.descricao,
+                      valor: o.valor,
+                      status: o.status,
+                      createdAt: o.createdAt,
+                      veiculo: {
+                        placa: o.veiculo.placa,
+                        marca: o.veiculo.marca,
+                        modelo: o.veiculo.modelo,
+                      },
+                      cliente: {
+                        nome: o.cliente.nome,
+                      },
+                    }}
+                    oficina={{
+                      nome: user?.name || 'OFICINA',
+                      email: user?.email,
+                    }}
+                  >
+                    {({ loading, error }) => (
+                      <button
+                        type="button"
+                        disabled={loading || !!error}
+                        className={cn(
+                          'inline-flex h-8 items-center gap-1.5 rounded-md border border-border bg-card px-2.5 text-xs font-medium text-fg',
+                          'transition-all duration-150',
+                          'hover:border-accent/50 hover:bg-accent/5 hover:text-accent',
+                          'disabled:cursor-not-allowed disabled:opacity-50',
+                          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-bg'
+                        )}
+                        aria-label="Baixar PDF da ordem de serviço"
+                      >
+                        {loading ? (
+                          <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />
+                        ) : (
+                          <FileDown className="h-3.5 w-3.5" aria-hidden="true" />
+                        )}
+                        <span>{loading ? 'Gerando...' : error ? 'Erro' : 'Baixar PDF'}</span>
+                      </button>
+                    )}
+                  </OrdemPdfDownload>
+                </Suspense>
               </div>
             </article>
           ))}
