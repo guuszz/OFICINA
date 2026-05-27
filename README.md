@@ -13,6 +13,8 @@
   <img src="https://img.shields.io/badge/Vite-5-646CFF?style=flat-square&logo=vite&logoColor=white"/>
   <img src="https://img.shields.io/badge/Tailwind-3-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white"/>
   <a href="https://github.com/guuszz/OFICINA/actions/workflows/ci.yml"><img src="https://github.com/guuszz/OFICINA/actions/workflows/ci.yml/badge.svg" alt="CI"/></a>
+  <a href="https://oficina-swart.vercel.app"><img src="https://img.shields.io/github/deployments/guuszz/OFICINA/production?label=vercel&logo=vercel&style=flat-square" alt="Vercel deploy"/></a>
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/guuszz/OFICINA?style=flat-square" alt="MIT License"/></a>
 </p>
 
 <p align="center">
