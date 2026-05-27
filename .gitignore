@@ -61,3 +61,7 @@ jspm_packages/
 # Yarn Integrity file
 .yarn-integrity
 .vercel
+
+# Test coverage
+coverage/
+.nyc_output/

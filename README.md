@@ -13,6 +13,8 @@
   <img src="https://img.shields.io/badge/Vite-5-646CFF?style=flat-square&logo=vite&logoColor=white"/>
   <img src="https://img.shields.io/badge/Tailwind-3-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white"/>
   <a href="https://github.com/guuszz/OFICINA/actions/workflows/ci.yml"><img src="https://github.com/guuszz/OFICINA/actions/workflows/ci.yml/badge.svg" alt="CI"/></a>
+  <a href="https://codecov.io/gh/guuszz/OFICINA"><img src="https://codecov.io/gh/guuszz/OFICINA/graph/badge.svg" alt="Code coverage"/></a>
+  <a href="https://vitest.dev/"><img src="https://img.shields.io/badge/tested%20with-vitest-6E9F18?style=flat-square&logo=vitest&logoColor=white" alt="Tested with Vitest"/></a>
   <a href="https://oficina-swart.vercel.app"><img src="https://img.shields.io/github/deployments/guuszz/OFICINA/production?label=vercel&logo=vercel&style=flat-square" alt="Vercel deploy"/></a>
   <a href="LICENSE"><img src="https://img.shields.io/github/license/guuszz/OFICINA?style=flat-square" alt="MIT License"/></a>
 </p>
@@ -105,13 +107,31 @@ src/                    # Frontend React
 └── main.tsx
 ```
 
+## 🧪 Testes
+
+```bash
+npm test              # roda todos os testes
+npm run test:watch    # modo watch durante dev
+npm run test:coverage # gera relatório de cobertura + HTML report
+```
+
+Stack de testes:
+- **Vitest** — runner rápido, compatível com Jest API
+- **@testing-library/react** — testa componentes pela perspectiva do usuário
+- **jsdom** — DOM virtual para hooks e components
+- **v8 coverage** — relatórios em `coverage/index.html`
+
+38 testes cobrindo: `cn` helper, hooks (`useNumberTicker`, `useTheme`), e componentes (`StatusBadge`, `CarSilhouette`, `PageHeader`) — todos a 100% de cobertura nas unidades testadas.
+
 ## 🗺️ Roadmap
 
-- [ ] Persistência real (PostgreSQL ou SQLite)
-- [ ] Autenticação JWT
-- [ ] Geração de PDF da OS
+- [x] Persistência real (PostgreSQL via Neon + Prisma)
+- [x] Autenticação JWT
+- [x] Geração de PDF da OS
+- [x] Testes unitários (Vitest)
 - [ ] Documentação OpenAPI/Swagger
-- [ ] Testes automatizados
+- [ ] Testes E2E (Playwright) pros CRUDs
+- [ ] PWA installable
 
 ## 📝 Licença
 
