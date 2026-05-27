@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { ClipboardList, Car, User, DollarSign, Calendar, Search, Loader2, Edit3, Plus, FileText } from 'lucide-react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { ClipboardList, Loader2, Plus, Car, User, Calendar } from 'lucide-react';
 import { toast } from 'sonner';
 import {
   Dialog,
@@ -12,6 +12,9 @@ import {
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
+import PageHeader from './PageHeader';
+import StatusBadge, { type OrdemStatus } from './StatusBadge';
+import { cn } from '../lib/utils';
 
 interface Veiculo {
   id: string;
@@ -33,12 +36,7 @@ interface Ordem {
   cliente: { nome: string };
 }
 
-const statusOptions = [
-  { value: 'Aberta', label: '🔴 Aberta', badge: 'bg-red-100 text-red-800 border-red-200' },
-  { value: 'Em Andamento', label: '🟡 Em Andamento', badge: 'bg-yellow-100 text-yellow-800 border-yellow-200' },
-  { value: 'Concluída', label: '🟢 Concluída', badge: 'bg-green-100 text-green-800 border-green-200' },
-  { value: 'Cancelada', label: '⚫ Cancelada', badge: 'bg-gray-100 text-gray-800 border-gray-200' },
-] as const;
+const STATUS_VALUES: OrdemStatus[] = ['Aberta', 'Em Andamento', 'Concluída', 'Cancelada'];
 
 const OrdensList: React.FC = () => {
   const [ordens, setOrdens] = useState<Ordem[]>([]);
@@ -49,7 +47,12 @@ const OrdensList: React.FC = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState<string | null>(null);
 
-  const [formData, setFormData] = useState({ veiculoId: '', descricao: '', valor: '', status: 'Aberta' });
+  const [formData, setFormData] = useState({
+    veiculoId: '',
+    descricao: '',
+    valor: '',
+    status: 'Aberta',
+  });
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
@@ -124,14 +127,18 @@ const OrdensList: React.FC = () => {
     }
   };
 
-  const filtered = ordens.filter((o) => {
-    const matchSearch =
-      o.descricao.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      o.veiculo?.placa?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      o.cliente?.nome?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchStatus = statusFilter === 'all' || o.status === statusFilter;
-    return matchSearch && matchStatus;
-  });
+  const filtered = useMemo(() => {
+    const q = searchTerm.toLowerCase().trim();
+    return ordens.filter((o) => {
+      const matchSearch =
+        !q ||
+        o.descricao.toLowerCase().includes(q) ||
+        o.veiculo?.placa?.toLowerCase().includes(q) ||
+        o.cliente?.nome?.toLowerCase().includes(q);
+      const matchStatus = statusFilter === 'all' || o.status === statusFilter;
+      return matchSearch && matchStatus;
+    });
+  }, [ordens, searchTerm, statusFilter]);
 
   const formatDate = (s: string) =>
     new Date(s).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
@@ -139,232 +146,311 @@ const OrdensList: React.FC = () => {
   const formatMoney = (v: number) =>
     v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
-  const getStatusBadge = (status: string) =>
-    statusOptions.find((s) => s.value === status)?.badge || 'bg-gray-100 text-gray-800 border-gray-200';
-
-  if (loading) {
-    return (
-      <div className="bg-white/80 backdrop-blur-lg rounded-2xl shadow-xl border border-white/20 p-8">
-        <div className="flex items-center justify-center py-8">
-          <Loader2 className="w-6 h-6 animate-spin text-purple-600" />
-          <span className="ml-2 text-gray-600">Carregando ordens...</span>
-        </div>
-      </div>
-    );
-  }
+  if (loading) return <ListSkeleton />;
 
   return (
-    <div className="bg-white/80 backdrop-blur-lg rounded-2xl shadow-xl border border-white/20 p-8">
-      <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
-        <div className="flex items-center space-x-3">
-          <div className="p-2 bg-purple-100 rounded-lg">
-            <ClipboardList className="w-5 h-5 text-purple-600" />
-          </div>
-          <h2 className="text-xl font-semibold text-gray-800">Ordens de Serviço</h2>
-          <span className="bg-purple-100 text-purple-800 text-sm font-medium px-2 py-1 rounded-full">
-            {ordens.length}
-          </span>
-        </div>
-
-        <div className="flex items-center gap-3 flex-1 sm:flex-initial justify-end flex-wrap">
+    <div>
+      <PageHeader
+        count={filtered.length}
+        searchValue={searchTerm}
+        onSearchChange={setSearchTerm}
+        searchPlaceholder="Buscar descrição, placa ou cliente..."
+        filters={
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="h-10 rounded-md border border-slate-200 bg-white px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+            aria-label="Filtrar por status"
+            className={cn(
+              'h-10 rounded-md border border-border bg-card px-3 text-sm text-fg',
+              'transition-colors duration-150',
+              'hover:border-primary/40',
+              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-bg'
+            )}
           >
             <option value="all">Todos status</option>
-            {statusOptions.map((s) => (
-              <option key={s.value} value={s.value}>{s.label}</option>
+            {STATUS_VALUES.map((s) => (
+              <option key={s} value={s}>
+                {s}
+              </option>
             ))}
           </select>
-
-          <div className="relative flex-1 sm:flex-initial min-w-[180px]">
-            <Search className="w-4 h-4 absolute left-3 top-3 text-gray-400 pointer-events-none" />
-            <input
-              type="text"
-              placeholder="Buscar..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white/50 text-sm"
-            />
-          </div>
-
+        }
+        actions={
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
               <Button>
-                <Plus className="w-4 h-4" />
-                <span className="hidden sm:inline">Nova Ordem</span>
+                <Plus className="h-4 w-4" aria-hidden="true" />
+                <span>Nova ordem</span>
               </Button>
             </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Nova Ordem de Serviço</DialogTitle>
-                <DialogDescription>
-                  Selecione o veículo e descreva o serviço a ser executado.
-                </DialogDescription>
-              </DialogHeader>
-
-              <form onSubmit={handleSubmit} className="space-y-4 pt-2">
-                <div className="space-y-2">
-                  <Label htmlFor="veiculoId">
-                    <Car className="w-3.5 h-3.5 inline mr-1.5 -mt-0.5" />
-                    Veículo
-                  </Label>
-                  <select
-                    id="veiculoId"
-                    required
-                    value={formData.veiculoId}
-                    onChange={(e) => setFormData((p) => ({ ...p, veiculoId: e.target.value }))}
-                    className="flex h-10 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
-                  >
-                    <option value="">Selecione um veículo...</option>
-                    {veiculos.map((v) => (
-                      <option key={v.id} value={v.id}>
-                        {v.placa} — {v.marca} {v.modelo} ({v.cliente?.nome})
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="descricao">
-                    <FileText className="w-3.5 h-3.5 inline mr-1.5 -mt-0.5" />
-                    Descrição do serviço
-                  </Label>
-                  <textarea
-                    id="descricao"
-                    required
-                    rows={3}
-                    placeholder="Ex: Troca de óleo e filtros, revisão geral..."
-                    value={formData.descricao}
-                    onChange={(e) => setFormData((p) => ({ ...p, descricao: e.target.value }))}
-                    className="flex w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 resize-none"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="valor">
-                    <DollarSign className="w-3.5 h-3.5 inline mr-1.5 -mt-0.5" />
-                    Valor (R$)
-                  </Label>
-                  <Input
-                    id="valor"
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    required
-                    placeholder="350.00"
-                    value={formData.valor}
-                    onChange={(e) => setFormData((p) => ({ ...p, valor: e.target.value }))}
-                  />
-                </div>
-
-                <div className="flex justify-end gap-2 pt-2">
-                  <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
-                    Cancelar
-                  </Button>
-                  <Button type="submit" disabled={submitting || !veiculos.length}>
-                    {submitting ? (
-                      <>
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                        Criando...
-                      </>
-                    ) : (
-                      <>
-                        <Plus className="w-4 h-4" />
-                        Criar OS
-                      </>
-                    )}
-                  </Button>
-                </div>
-                {!veiculos.length && (
-                  <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-md p-2">
-                    Cadastre um veículo antes de abrir uma OS.
-                  </p>
-                )}
-              </form>
-            </DialogContent>
+            <OrdemFormDialog
+              formData={formData}
+              setFormData={setFormData}
+              veiculos={veiculos}
+              submitting={submitting}
+              onSubmit={handleSubmit}
+              onCancel={() => setDialogOpen(false)}
+            />
           </Dialog>
-        </div>
-      </div>
+        }
+      />
 
       {filtered.length === 0 ? (
-        <div className="text-center py-12 text-gray-500">
-          <ClipboardList className="w-16 h-16 mx-auto mb-4 text-gray-300" />
-          <p className="text-lg font-medium">
-            {searchTerm || statusFilter !== 'all' ? 'Nenhuma ordem encontrada' : 'Nenhuma ordem aberta'}
-          </p>
-          <p className="text-sm">
-            {searchTerm || statusFilter !== 'all' ? 'Ajuste os filtros pra ver mais.' : 'Crie a primeira ordem de serviço.'}
-          </p>
-        </div>
+        <EmptyState
+          searching={!!searchTerm || statusFilter !== 'all'}
+          onClearFilters={() => {
+            setSearchTerm('');
+            setStatusFilter('all');
+          }}
+          onCreate={() => setDialogOpen(true)}
+        />
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-3">
           {filtered.map((o) => (
-            <div
+            <article
               key={o.id}
-              className="bg-white/60 border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-all hover:bg-white/80"
+              className="rounded-lg border border-border bg-card p-4 transition-all duration-200 hover:border-primary/30 hover:shadow-md"
             >
-              <div className="flex flex-wrap items-start justify-between gap-4 mb-3">
-                <div className="flex items-start space-x-3 flex-1 min-w-0">
-                  <div className="p-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex-shrink-0">
-                    <ClipboardList className="w-4 h-4 text-white" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-gray-800 line-clamp-2">{o.descricao}</h3>
-                    <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-gray-500">
-                      <span className="inline-flex items-center gap-1">
-                        <Car className="w-3.5 h-3.5" />
-                        <span className="font-mono">{o.veiculo?.placa}</span>
-                      </span>
-                      <span>·</span>
-                      <span className="inline-flex items-center gap-1">
-                        <User className="w-3.5 h-3.5" />
-                        {o.cliente?.nome}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-3 flex-shrink-0">
-                  <span className="text-lg font-semibold text-gray-800">
-                    {formatMoney(o.valor)}
-                  </span>
-                  <span
-                    className={`text-xs font-medium border rounded-full px-2.5 py-1 ${getStatusBadge(o.status)}`}
-                  >
-                    {o.status}
-                  </span>
-                </div>
+              {/* Linha 1: status badge + valor à direita */}
+              <div className="mb-2 flex items-start justify-between gap-3">
+                <StatusBadge status={o.status} />
+                <span className="text-base font-semibold tracking-tight text-fg tabular-nums">
+                  {formatMoney(o.valor)}
+                </span>
               </div>
 
-              <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-gray-100">
-                <div className="flex items-center gap-1 text-xs text-gray-500">
-                  <Calendar className="w-3.5 h-3.5" />
-                  <span>Aberta em {formatDate(o.createdAt)}</span>
-                </div>
+              {/* Linha 2: descrição */}
+              <h3 className="mb-2 text-sm font-medium leading-snug text-fg line-clamp-2">
+                {o.descricao}
+              </h3>
 
-                <div className="flex items-center gap-2">
-                  <Edit3 className="w-3.5 h-3.5 text-gray-400" />
-                  <select
-                    value={o.status}
-                    disabled={updatingStatus === o.id}
-                    onChange={(e) => updateStatus(o.id, e.target.value)}
-                    className="text-xs rounded-md border border-gray-200 bg-white px-2 py-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500"
-                  >
-                    {statusOptions.map((s) => (
-                      <option key={s.value} value={s.value}>{s.label}</option>
-                    ))}
-                  </select>
-                  {updatingStatus === o.id && <Loader2 className="w-3.5 h-3.5 animate-spin text-gray-400" />}
-                </div>
+              {/* Linha 3: metadados (veículo + cliente + data) */}
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-muted-foreground">
+                <span className="inline-flex items-center gap-1.5">
+                  <Car className="h-3.5 w-3.5" aria-hidden="true" />
+                  <span className="rounded border border-border bg-muted px-1.5 py-0.5 font-mono text-[10px] font-semibold text-fg">
+                    {o.veiculo?.placa}
+                  </span>
+                  <span className="truncate">
+                    {o.veiculo?.marca} {o.veiculo?.modelo}
+                  </span>
+                </span>
+                <span className="inline-flex items-center gap-1.5">
+                  <User className="h-3.5 w-3.5" aria-hidden="true" />
+                  <span className="truncate">{o.cliente?.nome}</span>
+                </span>
+                <span className="inline-flex items-center gap-1.5 tabular-nums">
+                  <Calendar className="h-3.5 w-3.5" aria-hidden="true" />
+                  {formatDate(o.createdAt)}
+                </span>
               </div>
-            </div>
+
+              {/* Linha 4: status selector */}
+              <div className="mt-3 flex items-center gap-2 border-t border-border pt-3">
+                <Label htmlFor={`status-${o.id}`} className="text-xs text-muted-foreground">
+                  Mudar status:
+                </Label>
+                <select
+                  id={`status-${o.id}`}
+                  value={o.status}
+                  disabled={updatingStatus === o.id}
+                  onChange={(e) => updateStatus(o.id, e.target.value)}
+                  className={cn(
+                    'h-8 rounded-md border border-border bg-card px-2 text-xs text-fg',
+                    'transition-colors duration-150',
+                    'hover:border-primary/40 disabled:opacity-50',
+                    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-bg'
+                  )}
+                >
+                  {STATUS_VALUES.map((s) => (
+                    <option key={s} value={s}>
+                      {s}
+                    </option>
+                  ))}
+                </select>
+                {updatingStatus === o.id && (
+                  <Loader2 className="h-3.5 w-3.5 animate-spin text-muted-foreground" aria-hidden="true" />
+                )}
+              </div>
+            </article>
           ))}
         </div>
       )}
     </div>
   );
 };
+
+// ---------------------------------------------------------------------------
+
+interface OrdemFormDialogProps {
+  formData: { veiculoId: string; descricao: string; valor: string; status: string };
+  setFormData: React.Dispatch<
+    React.SetStateAction<{ veiculoId: string; descricao: string; valor: string; status: string }>
+  >;
+  veiculos: Veiculo[];
+  submitting: boolean;
+  onSubmit: (e: React.FormEvent) => void;
+  onCancel: () => void;
+}
+
+const OrdemFormDialog: React.FC<OrdemFormDialogProps> = ({
+  formData,
+  setFormData,
+  veiculos,
+  submitting,
+  onSubmit,
+  onCancel,
+}) => (
+  <DialogContent>
+    <DialogHeader>
+      <DialogTitle>Nova ordem de serviço</DialogTitle>
+      <DialogDescription>
+        Selecione o veículo e descreva o serviço a ser executado.
+      </DialogDescription>
+    </DialogHeader>
+
+    <form onSubmit={onSubmit} className="space-y-4 pt-2">
+      <div className="space-y-1.5">
+        <Label htmlFor="ordem-veiculo">Veículo</Label>
+        <select
+          id="ordem-veiculo"
+          required
+          value={formData.veiculoId}
+          onChange={(e) => setFormData((p) => ({ ...p, veiculoId: e.target.value }))}
+          className={cn(
+            'flex h-10 w-full rounded-md border border-border bg-card px-3 py-2 text-sm text-fg',
+            'transition-colors duration-150',
+            'hover:border-primary/40',
+            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-bg'
+          )}
+        >
+          <option value="">Selecione um veículo...</option>
+          {veiculos.map((v) => (
+            <option key={v.id} value={v.id}>
+              {v.placa} — {v.marca} {v.modelo} ({v.cliente?.nome})
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div className="space-y-1.5">
+        <Label htmlFor="ordem-descricao">Descrição do serviço</Label>
+        <textarea
+          id="ordem-descricao"
+          required
+          rows={3}
+          placeholder="Ex: Troca de óleo e filtros, revisão geral..."
+          value={formData.descricao}
+          onChange={(e) => setFormData((p) => ({ ...p, descricao: e.target.value }))}
+          className={cn(
+            'flex w-full resize-none rounded-md border border-border bg-card px-3 py-2 text-sm text-fg',
+            'placeholder:text-muted-foreground',
+            'transition-colors duration-150',
+            'hover:border-primary/40',
+            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-bg'
+          )}
+        />
+      </div>
+
+      <div className="space-y-1.5">
+        <Label htmlFor="ordem-valor">Valor (R$)</Label>
+        <Input
+          id="ordem-valor"
+          type="number"
+          inputMode="decimal"
+          step="0.01"
+          min="0"
+          required
+          placeholder="350,00"
+          className="tabular-nums"
+          value={formData.valor}
+          onChange={(e) => setFormData((p) => ({ ...p, valor: e.target.value }))}
+        />
+      </div>
+
+      {!veiculos.length && (
+        <p className="rounded-md border border-amber-200 bg-amber-50 p-2.5 text-xs text-amber-900 dark:border-amber-900/50 dark:bg-amber-900/20 dark:text-amber-200">
+          Cadastre um veículo antes de abrir uma ordem de serviço.
+        </p>
+      )}
+
+      <div className="flex justify-end gap-2 pt-2">
+        <Button type="button" variant="outline" onClick={onCancel}>
+          Cancelar
+        </Button>
+        <Button type="submit" disabled={submitting || !veiculos.length}>
+          {submitting ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+              <span>Criando...</span>
+            </>
+          ) : (
+            <>
+              <Plus className="h-4 w-4" aria-hidden="true" />
+              <span>Criar OS</span>
+            </>
+          )}
+        </Button>
+      </div>
+    </form>
+  </DialogContent>
+);
+
+const EmptyState: React.FC<{
+  searching: boolean;
+  onClearFilters: () => void;
+  onCreate: () => void;
+}> = ({ searching, onClearFilters, onCreate }) => (
+  <div className="rounded-lg border border-dashed border-border bg-card py-16 text-center">
+    <ClipboardList className="mx-auto mb-3 h-10 w-10 text-muted-foreground/40" aria-hidden="true" />
+    <p className="text-sm font-medium text-fg">
+      {searching ? 'Nenhuma ordem encontrada' : 'Nenhuma ordem aberta ainda'}
+    </p>
+    <p className="mt-1 text-xs text-muted-foreground">
+      {searching ? 'Ajuste os filtros pra ver mais.' : 'Crie a primeira ordem de serviço.'}
+    </p>
+    <Button
+      variant="outline"
+      size="sm"
+      className="mt-4"
+      onClick={searching ? onClearFilters : onCreate}
+    >
+      {searching ? 'Limpar filtros' : (
+        <>
+          <Plus className="h-4 w-4" aria-hidden="true" />
+          <span>Nova ordem</span>
+        </>
+      )}
+    </Button>
+  </div>
+);
+
+const ListSkeleton: React.FC = () => (
+  <div className="animate-pulse">
+    <div className="mb-6 flex items-center justify-between">
+      <div className="h-4 w-32 rounded bg-muted" />
+      <div className="flex gap-3">
+        <div className="h-10 w-40 rounded-md bg-muted" />
+        <div className="h-10 w-64 rounded-md bg-muted" />
+        <div className="h-10 w-32 rounded-md bg-muted" />
+      </div>
+    </div>
+    <div className="space-y-3">
+      {Array.from({ length: 3 }).map((_, i) => (
+        <div key={i} className="rounded-lg border border-border bg-card p-4">
+          <div className="mb-3 flex items-center justify-between">
+            <div className="h-5 w-20 rounded-full bg-muted" />
+            <div className="h-5 w-20 rounded bg-muted" />
+          </div>
+          <div className="h-4 w-3/4 rounded bg-muted" />
+          <div className="mt-3 flex gap-4">
+            <div className="h-3 w-24 rounded bg-muted" />
+            <div className="h-3 w-32 rounded bg-muted" />
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+);
 
 export default OrdensList;
