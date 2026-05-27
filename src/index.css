@@ -1,3 +1,87 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  :root {
+    /* Light mode — Trust & Authority palette */
+    --color-bg: #F8FAFC;
+    --color-fg: #0F172A;
+    --color-card: #FFFFFF;
+    --color-card-fg: #0F172A;
+    --color-primary: #334155;
+    --color-primary-fg: #FFFFFF;
+    --color-secondary: #475569;
+    --color-secondary-fg: #FFFFFF;
+    --color-accent: #059669;
+    --color-accent-fg: #FFFFFF;
+    --color-muted: #F2F3F4;
+    --color-muted-fg: #64748B;
+    --color-border: #E6E8EA;
+    --color-destructive: #DC2626;
+    --color-destructive-fg: #FFFFFF;
+    --color-ring: #334155;
+  }
+
+  .dark {
+    --color-bg: #0F172A;
+    --color-fg: #F8FAFC;
+    --color-card: #1E293B;
+    --color-card-fg: #F8FAFC;
+    --color-primary: #94A3B8;
+    --color-primary-fg: #0F172A;
+    --color-secondary: #64748B;
+    --color-secondary-fg: #FFFFFF;
+    --color-accent: #10B981;
+    --color-accent-fg: #0F172A;
+    --color-muted: #1E293B;
+    --color-muted-fg: #94A3B8;
+    --color-border: #334155;
+    --color-destructive: #EF4444;
+    --color-destructive-fg: #FFFFFF;
+    --color-ring: #94A3B8;
+  }
+
+  * {
+    border-color: var(--color-border);
+  }
+
+  html {
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-fg);
+    font-feature-settings: 'cv11', 'ss01';
+  }
+
+  /* Tabular numbers em tabelas (evita layout shift em colunas de valores) */
+  table,
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Focus ring consistente em todos os interativos */
+  *:focus-visible {
+    outline: 2px solid var(--color-ring);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* Respeita preferência de reduced-motion */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}

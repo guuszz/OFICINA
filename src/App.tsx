@@ -1,14 +1,32 @@
-import React, { useState } from 'react';
-import { Wrench, Users, Car, ClipboardList, Activity, LogOut } from 'lucide-react';
+import { useState } from 'react';
+import { Loader2 } from 'lucide-react';
 import { Toaster, toast } from 'sonner';
 import ClientesList from './components/ClientesList';
 import VeiculosList from './components/VeiculosList';
 import OrdensList from './components/OrdensList';
 import Stats from './components/Stats';
 import AuthScreen from './components/AuthScreen';
+import Sidebar, { MobileBottomNav, type ActiveTab } from './components/Sidebar';
 import { useAuth } from './contexts/AuthContext';
 
-type ActiveTab = 'dashboard' | 'clientes' | 'veiculos' | 'ordens';
+const PAGE_TITLES: Record<ActiveTab, { title: string; subtitle: string }> = {
+  dashboard: {
+    title: 'Dashboard',
+    subtitle: 'Visão geral da sua oficina',
+  },
+  clientes: {
+    title: 'Clientes',
+    subtitle: 'Gerencie os clientes cadastrados',
+  },
+  veiculos: {
+    title: 'Veículos',
+    subtitle: 'Veículos associados aos seus clientes',
+  },
+  ordens: {
+    title: 'Ordens de Serviço',
+    subtitle: 'Acompanhe os atendimentos em andamento',
+  },
+};
 
 function App() {
   const { user, loading, logout } = useAuth();
@@ -21,10 +39,10 @@ function App() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex items-center justify-center">
-        <div className="flex items-center gap-3 text-gray-600">
-          <div className="w-8 h-8 rounded-full border-2 border-blue-600 border-t-transparent animate-spin" />
-          <span>Carregando...</span>
+      <div className="flex min-h-screen items-center justify-center bg-bg">
+        <div className="flex items-center gap-3 text-muted-foreground">
+          <Loader2 className="h-5 w-5 animate-spin text-accent" aria-hidden="true" />
+          <span className="text-sm">Carregando...</span>
         </div>
       </div>
     );
@@ -39,88 +57,59 @@ function App() {
     );
   }
 
-  const tabs = [
-    { id: 'dashboard' as const, label: 'Dashboard', icon: Activity },
-    { id: 'clientes' as const, label: 'Clientes', icon: Users },
-    { id: 'veiculos' as const, label: 'Veículos', icon: Car },
-    { id: 'ordens' as const, label: 'Ordens de Serviço', icon: ClipboardList },
-  ];
+  const page = PAGE_TITLES[activeTab];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
+    <div className="min-h-screen bg-bg">
       <Toaster
         position="top-right"
         richColors
         closeButton
-        toastOptions={{ style: { fontFamily: 'system-ui, -apple-system, sans-serif' } }}
+        toastOptions={{ style: { fontFamily: '"Plus Jakarta Sans", system-ui, sans-serif' } }}
       />
-      {/* Header */}
-      <header className="bg-white/80 backdrop-blur-lg border-b border-white/20 shadow-lg">
-        <div className="max-w-7xl mx-auto px-4 py-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="p-3 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl shadow-lg">
-                <Wrench className="w-8 h-8 text-white" />
-              </div>
-              <div>
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                  Oficina Mecânica
-                </h1>
-                <p className="text-gray-600 text-sm">Sistema de Gestão Completo</p>
-              </div>
-            </div>
 
-            <div className="flex items-center gap-3">
-              <div className="hidden sm:flex flex-col items-end">
-                <span className="text-sm font-medium text-gray-800">
-                  {user.name || user.email}
-                </span>
-                <span className="text-xs text-gray-500">{user.email}</span>
-              </div>
-              <button
-                onClick={handleLogout}
-                className="flex items-center gap-2 px-3 py-2 bg-white/70 hover:bg-white/90 border border-gray-200 rounded-lg transition-all hover:shadow-md text-sm text-gray-700"
-                aria-label="Sair"
-              >
-                <LogOut className="w-4 h-4" />
-                <span className="hidden sm:inline">Sair</span>
-              </button>
+      {/* Sidebar fixa desktop */}
+      <Sidebar
+        active={activeTab}
+        onChange={setActiveTab}
+        onLogout={handleLogout}
+        userEmail={user.email}
+        userName={user.name}
+      />
+
+      {/* Conteúdo principal — desloca pra direita 240px em desktop */}
+      <div className="md:pl-60">
+        {/* Top bar (mobile + título da página em desktop) */}
+        <header className="sticky top-0 z-20 border-b border-border bg-card/80 backdrop-blur supports-[backdrop-filter]:bg-card/60">
+          <div className="flex h-16 items-center gap-4 px-4 sm:px-6 lg:px-8">
+            <div className="min-w-0 flex-1">
+              <h1 className="truncate text-lg font-semibold tracking-tight text-fg sm:text-xl">
+                {page.title}
+              </h1>
+              <p className="hidden truncate text-xs text-muted-foreground sm:block">
+                {page.subtitle}
+              </p>
+            </div>
+            {/* Em mobile mostra email do user (sidebar não aparece) */}
+            <div className="hidden text-right md:hidden">
+              <p className="truncate text-sm font-medium text-fg">{user.name || user.email}</p>
             </div>
           </div>
-        </div>
-      </header>
+        </header>
 
-      {/* Navigation */}
-      <nav className="bg-white/70 backdrop-blur-lg border-b border-white/20">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="flex space-x-1 overflow-x-auto">
-            {tabs.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`
-                  flex items-center space-x-2 px-6 py-4 text-sm font-medium transition-all duration-200 whitespace-nowrap
-                  ${activeTab === tab.id
-                    ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50/50'
-                    : 'text-gray-600 hover:text-blue-600 hover:bg-white/50'
-                  }
-                `}
-              >
-                <tab.icon className="w-4 h-4" />
-                <span>{tab.label}</span>
-              </button>
-            ))}
+        {/* Main content */}
+        <main className="mx-auto max-w-7xl px-4 pb-24 pt-6 sm:px-6 sm:pb-8 lg:px-8 lg:pt-8">
+          <div className="animate-fade-in">
+            {activeTab === 'dashboard' && <Stats />}
+            {activeTab === 'clientes' && <ClientesList />}
+            {activeTab === 'veiculos' && <VeiculosList />}
+            {activeTab === 'ordens' && <OrdensList />}
           </div>
-        </div>
-      </nav>
+        </main>
+      </div>
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 py-8">
-        {activeTab === 'dashboard' && <Stats />}
-        {activeTab === 'clientes' && <ClientesList />}
-        {activeTab === 'veiculos' && <VeiculosList />}
-        {activeTab === 'ordens' && <OrdensList />}
-      </main>
+      {/* Bottom nav mobile */}
+      <MobileBottomNav active={activeTab} onChange={setActiveTab} />
     </div>
   );
 }
