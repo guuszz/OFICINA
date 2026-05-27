@@ -9,6 +9,24 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <title>OFICINA — Gestão de oficina mecânica</title>
+    <script>
+      // Anti-FOUC: aplica o tema antes do React montar pra evitar flash
+      (function () {
+        try {
+          var stored = localStorage.getItem('oficina-theme');
+          var theme = stored === 'light' || stored === 'dark' ? stored : null;
+          if (!theme) {
+            theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+          }
+          if (theme === 'dark') {
+            document.documentElement.classList.add('dark');
+            document.documentElement.style.colorScheme = 'dark';
+          } else {
+            document.documentElement.style.colorScheme = 'light';
+          }
+        } catch (e) { /* localStorage bloqueado — fica light */ }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

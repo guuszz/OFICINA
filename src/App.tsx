@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Loader2 } from 'lucide-react';
 import { Toaster, toast } from 'sonner';
 import ClientesList from './components/ClientesList';
@@ -31,6 +31,11 @@ const PAGE_TITLES: Record<ActiveTab, { title: string; subtitle: string }> = {
 function App() {
   const { user, loading, logout } = useAuth();
   const [activeTab, setActiveTab] = useState<ActiveTab>('dashboard');
+
+  // Scroll-to-top ao trocar de seção — evita usuário ficar perdido em meio scroll
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [activeTab]);
 
   const handleLogout = () => {
     logout();

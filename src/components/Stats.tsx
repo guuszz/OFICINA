@@ -128,29 +128,21 @@ const Stats: React.FC = () => {
       {/* KPI cards — 4 cards (não 6, evita overload) */}
       <section aria-label="Indicadores principais">
         <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
-          <KpiCard
-            label="Clientes"
-            value={stats.totalClientes}
-            icon={Users}
-            tone="neutral"
-          />
-          <KpiCard
-            label="Veículos"
-            value={stats.totalVeiculos}
-            icon={Car}
-            tone="neutral"
-          />
+          <KpiCard label="Clientes" value={stats.totalClientes} icon={Users} tone="neutral" delay={0} />
+          <KpiCard label="Veículos" value={stats.totalVeiculos} icon={Car} tone="neutral" delay={50} />
           <KpiCard
             label="OS em aberto"
             value={stats.ordensAbertas}
             icon={Activity}
             tone={stats.ordensAbertas > 0 ? 'warning' : 'neutral'}
+            delay={100}
           />
           <KpiCard
             label="Em andamento"
             value={stats.ordensAndamento}
             icon={TrendingUp}
             tone={stats.ordensAndamento > 0 ? 'accent' : 'neutral'}
+            delay={150}
           />
         </div>
       </section>
@@ -302,19 +294,24 @@ interface KpiCardProps {
   value: number;
   icon: LucideIcon;
   tone: 'neutral' | 'accent' | 'warning';
+  /** ms de delay pro stagger entrance (0 = primeiro card). */
+  delay?: number;
 }
 
-const KpiCard: React.FC<KpiCardProps> = ({ label, value, icon: Icon, tone }) => {
+const KpiCard: React.FC<KpiCardProps> = ({ label, value, icon: Icon, tone, delay = 0 }) => {
   const display = useNumberTicker(value, 600);
 
   const toneStyles = {
     neutral: 'bg-muted text-muted-foreground',
     accent: 'bg-accent/10 text-accent',
-    warning: 'bg-amber-100 text-amber-900',
+    warning: 'bg-amber-100 text-amber-900 dark:bg-amber-900/30 dark:text-amber-200',
   };
 
   return (
-    <div className="group relative rounded-lg border border-border bg-card p-4 transition-all duration-200 hover:border-primary/30 hover:shadow-md sm:p-5">
+    <div
+      className="group relative animate-fade-in rounded-lg border border-border bg-card p-4 opacity-0 transition-all duration-200 hover:border-primary/30 hover:shadow-md sm:p-5"
+      style={{ animationDelay: `${delay}ms`, animationFillMode: 'forwards' }}
+    >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           <p className="truncate text-xs font-medium uppercase tracking-wider text-muted-foreground">

@@ -1,6 +1,18 @@
 import React from 'react';
-import { Wrench, Users, Car, ClipboardList, Activity, LogOut, type LucideIcon } from 'lucide-react';
+import {
+  Wrench,
+  Users,
+  Car,
+  ClipboardList,
+  Activity,
+  LogOut,
+  Sun,
+  Moon,
+  Monitor,
+  type LucideIcon,
+} from 'lucide-react';
 import { cn } from '../lib/utils';
+import { useTheme, type Theme } from '../lib/useTheme';
 
 export type ActiveTab = 'dashboard' | 'clientes' | 'veiculos' | 'ordens';
 
@@ -28,6 +40,7 @@ const NAV_ITEMS: NavItem[] = [
 const Sidebar: React.FC<SidebarProps> = ({ active, onChange, onLogout, userEmail, userName }) => {
   const initials = (userName || userEmail || '?').slice(0, 2).toUpperCase();
   const displayName = userName || userEmail?.split('@')[0] || 'Conta';
+  const { theme, setTheme } = useTheme();
 
   return (
     <aside
@@ -81,8 +94,42 @@ const Sidebar: React.FC<SidebarProps> = ({ active, onChange, onLogout, userEmail
         </ul>
       </nav>
 
-      {/* Footer com user + logout */}
+      {/* Footer com theme switcher + user + logout */}
       <div className="border-t border-sidebar-border p-3">
+        {/* Theme switcher segmented */}
+        <div
+          role="radiogroup"
+          aria-label="Tema da interface"
+          className="mb-3 flex gap-1 rounded-md bg-sidebar-hover p-1"
+        >
+          {(
+            [
+              { id: 'light', label: 'Claro', icon: Sun },
+              { id: 'system', label: 'Sistema', icon: Monitor },
+              { id: 'dark', label: 'Escuro', icon: Moon },
+            ] as Array<{ id: Theme; label: string; icon: LucideIcon }>
+          ).map(({ id, label, icon: Icon }) => (
+            <button
+              key={id}
+              type="button"
+              role="radio"
+              aria-checked={theme === id}
+              onClick={() => setTheme(id)}
+              title={label}
+              className={cn(
+                'flex flex-1 items-center justify-center rounded p-1.5 transition-all duration-150',
+                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-sidebar',
+                theme === id
+                  ? 'bg-sidebar text-sidebar-fg-active shadow-sm'
+                  : 'text-sidebar-fg-muted hover:text-sidebar-fg-active'
+              )}
+            >
+              <Icon className="h-3.5 w-3.5" aria-hidden="true" />
+              <span className="sr-only">{label}</span>
+            </button>
+          ))}
+        </div>
+
         <div className="mb-2 flex items-center gap-3 rounded-md px-3 py-2">
           <div
             className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-sidebar-hover text-xs font-semibold text-sidebar-fg-active"
