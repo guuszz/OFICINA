@@ -19,7 +19,7 @@
   <img src="docs/screenshots/dashboard.png" alt="Dashboard com clientes, veiculos e ordens" width="800"/>
 </p>
 <p align="center">
-  <a href="https://oficina-rouge.vercel.app"><b>🌐 Demo ao vivo</b></a>
+  <a href="https://oficina-swart.vercel.app"><b>🌐 Demo ao vivo</b></a>
 </p>
 
 
