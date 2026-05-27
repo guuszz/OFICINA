@@ -20,7 +20,7 @@
 </p>
 
 <p align="center">
-  <img src="docs/screenshots/dashboard.png" alt="Dashboard com clientes, veiculos e ordens" width="800"/>
+  <img src="docs/screenshots/dashboard-v2.png" alt="Dashboard com clientes, veiculos e ordens" width="800"/>
 </p>
 <p align="center">
   <a href="https://oficina-swart.vercel.app"><b>🌐 Demo ao vivo</b></a>
