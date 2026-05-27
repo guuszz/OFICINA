@@ -5,28 +5,12 @@ import {
   Text,
   View,
   StyleSheet,
-  Font,
   PDFDownloadLink,
 } from '@react-pdf/renderer';
 
-// ─── Registrar Plus Jakarta Sans pra match com o app ──────────────────
-Font.register({
-  family: 'Plus Jakarta Sans',
-  fonts: [
-    {
-      src: 'https://fonts.gstatic.com/s/plusjakartasans/v8/LDIbaomQNQcsA88c7O9yZ4KMCoOg4IA6-91aHEjcWuA_qU79TltUKw.ttf',
-      fontWeight: 400,
-    },
-    {
-      src: 'https://fonts.gstatic.com/s/plusjakartasans/v8/LDIbaomQNQcsA88c7O9yZ4KMCoOg4IA6-91aHEjcWvA_qU79TltUKw.ttf',
-      fontWeight: 600,
-    },
-    {
-      src: 'https://fonts.gstatic.com/s/plusjakartasans/v8/LDIbaomQNQcsA88c7O9yZ4KMCoOg4IA6-91aHEjcWvk_qU79TltUKw.ttf',
-      fontWeight: 700,
-    },
-  ],
-});
+// Usa Helvetica default (built-in @react-pdf/renderer). PDF não precisa ser
+// pixel-perfect com Plus Jakarta — Helvetica é universalmente disponível e
+// não depende de download de TTF externa (que pode dar 404).
 
 // ─── Tipos ───────────────────────────────────────────────────────────
 interface Ordem {
@@ -56,7 +40,7 @@ interface OficinaInfo {
 // ─── Estilos PDF ─────────────────────────────────────────────────────
 const styles = StyleSheet.create({
   page: {
-    fontFamily: 'Plus Jakarta Sans',
+    fontFamily: 'Helvetica',
     fontSize: 10,
     padding: 40,
     color: '#0F172A',
