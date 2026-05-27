@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { ClipboardList, Loader2, Plus, Car, User, Calendar } from 'lucide-react';
+import { ClipboardList, Loader2, Plus, Car, User, Calendar, FileDown } from 'lucide-react';
 import { toast } from 'sonner';
 import {
   Dialog,
@@ -14,6 +14,8 @@ import { Input } from './ui/input';
 import { Label } from './ui/label';
 import PageHeader from './PageHeader';
 import StatusBadge, { type OrdemStatus } from './StatusBadge';
+import { OrdemPdfDownload } from './OrdemPdf';
+import { useAuth } from '../contexts/AuthContext';
 import { cn } from '../lib/utils';
 
 interface Veiculo {
@@ -39,6 +41,7 @@ interface Ordem {
 const STATUS_VALUES: OrdemStatus[] = ['Aberta', 'Em Andamento', 'Concluída', 'Cancelada'];
 
 const OrdensList: React.FC = () => {
+  const { user } = useAuth();
   const [ordens, setOrdens] = useState<Ordem[]>([]);
   const [veiculos, setVeiculos] = useState<Veiculo[]>([]);
   const [loading, setLoading] = useState(true);
@@ -245,32 +248,78 @@ const OrdensList: React.FC = () => {
                 </span>
               </div>
 
-              {/* Linha 4: status selector */}
-              <div className="mt-3 flex items-center gap-2 border-t border-border pt-3">
-                <Label htmlFor={`status-${o.id}`} className="text-xs text-muted-foreground">
-                  Mudar status:
-                </Label>
-                <select
-                  id={`status-${o.id}`}
-                  value={o.status}
-                  disabled={updatingStatus === o.id}
-                  onChange={(e) => updateStatus(o.id, e.target.value)}
-                  className={cn(
-                    'h-8 rounded-md border border-border bg-card px-2 text-xs text-fg',
-                    'transition-colors duration-150',
-                    'hover:border-primary/40 disabled:opacity-50',
-                    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-bg'
+              {/* Linha 4: status selector + PDF download */}
+              <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-border pt-3">
+                <div className="flex items-center gap-2">
+                  <Label htmlFor={`status-${o.id}`} className="text-xs text-muted-foreground">
+                    Status:
+                  </Label>
+                  <select
+                    id={`status-${o.id}`}
+                    value={o.status}
+                    disabled={updatingStatus === o.id}
+                    onChange={(e) => updateStatus(o.id, e.target.value)}
+                    className={cn(
+                      'h-8 rounded-md border border-border bg-card px-2 text-xs text-fg',
+                      'transition-colors duration-150',
+                      'hover:border-primary/40 disabled:opacity-50',
+                      'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-bg'
+                    )}
+                  >
+                    {STATUS_VALUES.map((s) => (
+                      <option key={s} value={s}>
+                        {s}
+                      </option>
+                    ))}
+                  </select>
+                  {updatingStatus === o.id && (
+                    <Loader2 className="h-3.5 w-3.5 animate-spin text-muted-foreground" aria-hidden="true" />
                   )}
+                </div>
+
+                <OrdemPdfDownload
+                  ordem={{
+                    id: o.id,
+                    descricao: o.descricao,
+                    valor: o.valor,
+                    status: o.status,
+                    createdAt: o.createdAt,
+                    veiculo: {
+                      placa: o.veiculo.placa,
+                      marca: o.veiculo.marca,
+                      modelo: o.veiculo.modelo,
+                    },
+                    cliente: {
+                      nome: o.cliente.nome,
+                    },
+                  }}
+                  oficina={{
+                    nome: user?.name || 'OFICINA',
+                    email: user?.email,
+                  }}
                 >
-                  {STATUS_VALUES.map((s) => (
-                    <option key={s} value={s}>
-                      {s}
-                    </option>
-                  ))}
-                </select>
-                {updatingStatus === o.id && (
-                  <Loader2 className="h-3.5 w-3.5 animate-spin text-muted-foreground" aria-hidden="true" />
-                )}
+                  {({ loading, error }) => (
+                    <button
+                      type="button"
+                      disabled={loading || !!error}
+                      className={cn(
+                        'inline-flex h-8 items-center gap-1.5 rounded-md border border-border bg-card px-2.5 text-xs font-medium text-fg',
+                        'transition-all duration-150',
+                        'hover:border-accent/50 hover:bg-accent/5 hover:text-accent',
+                        'disabled:cursor-not-allowed disabled:opacity-50',
+                        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-bg'
+                      )}
+                      aria-label="Baixar PDF da ordem de serviço"
+                    >
+                      {loading ? (
+                        <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />
+                      ) : (
+                        <FileDown className="h-3.5 w-3.5" aria-hidden="true" />
+                      )}
+                      <span>{loading ? 'Gerando...' : error ? 'Erro' : 'Baixar PDF'}</span>
+                    </button>
+                  )}
+                </OrdemPdfDownload>
               </div>
             </article>
           ))}
