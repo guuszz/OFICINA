@@ -3,11 +3,19 @@ import { z } from 'zod';
 import { prisma } from '../_lib/prisma.js';
 import { authenticate, setCors } from '../_lib/auth.js';
 
+const TIPOS = ['Sedan', 'Hatch', 'SUV', 'Picape', 'Esportivo', 'Moto', 'Outro'] as const;
+
 const createSchema = z.object({
   clienteId: z.string().min(1, 'Cliente obrigatório'),
   placa: z.string().min(6, 'Placa inválida'),
   marca: z.string().min(1, 'Marca obrigatória'),
   modelo: z.string().min(1, 'Modelo obrigatório'),
+  cor: z
+    .string()
+    .regex(/^#[0-9A-Fa-f]{6}$/, 'Cor deve ser hex #RRGGBB')
+    .optional()
+    .nullable(),
+  tipo: z.enum(TIPOS).optional().default('Outro'),
 });
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {

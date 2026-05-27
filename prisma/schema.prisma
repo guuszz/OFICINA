@@ -33,14 +33,27 @@ model Cliente {
   @@map("clientes")
 }
 
+enum VeiculoTipo {
+  Sedan
+  Hatch
+  SUV
+  Picape
+  Esportivo
+  Moto
+  Outro
+}
+
 model Veiculo {
-  id        String   @id @default(cuid())
+  id        String      @id @default(cuid())
   placa     String
   marca     String
   modelo    String
-  createdAt DateTime @default(now())
+  cor       String?     // Hex color (#RRGGBB) ou nome textual fallback
+  tipo      VeiculoTipo @default(Outro)
+  fotoUrl   String?     // URL da foto enviada pelo usuário (Vercel Blob)
+  createdAt DateTime    @default(now())
   clienteId String
-  cliente   Cliente  @relation(fields: [clienteId], references: [id], onDelete: Cascade)
+  cliente   Cliente     @relation(fields: [clienteId], references: [id], onDelete: Cascade)
   ordens    Ordem[]
 
   @@unique([placa, clienteId])
